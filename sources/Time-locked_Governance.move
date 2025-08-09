@@ -2,30 +2,23 @@ module SendMessage::TimeLockGovernance {
     use aptos_framework::signer;
     use aptos_framework::timestamp;
     use std::vector;
-
-    /// Error codes
     const E_PROPOSAL_NOT_FOUND: u64 = 1;
     const E_WAITING_PERIOD_NOT_OVER: u64 = 2;
     const E_PROPOSAL_ALREADY_EXECUTED: u64 = 3;
     const E_NOT_AUTHORIZED: u64 = 4;
-
-    /// Struct representing a governance proposal with time lock
     struct Proposal has store, key {
-        id: u64,                    // Unique proposal ID
-        description: vector<u8>,    // Proposal description
-        created_at: u64,           // Timestamp when proposal was created
-        waiting_period: u64,       // Mandatory waiting period in seconds
-        executed: bool,            // Whether proposal has been executed
-        proposer: address,         // Address of the proposer
+        id: u64,                   
+        description: vector<u8>,   
+        created_at: u64,           
+        waiting_period: u64,       
+        executed: bool,            
+        proposer: address,         
     }
-
-    /// Global storage for all proposals
     struct GovernanceStorage has key {
         proposals: vector<Proposal>,
         next_proposal_id: u64,
     }
 
-    /// Initialize governance storage
     public fun initialize_governance(admin: &signer) {
         let governance = GovernanceStorage {
             proposals: vector::empty<Proposal>(),
@@ -33,8 +26,6 @@ module SendMessage::TimeLockGovernance {
         };
         move_to(admin, governance);
     }
-
-    /// Function to create a new governance proposal with mandatory waiting period
     public fun create_proposal(
         proposer: &signer, 
         admin_addr: address,
@@ -57,7 +48,6 @@ module SendMessage::TimeLockGovernance {
         governance.next_proposal_id = governance.next_proposal_id + 1;
     }
 
-    /// Function to execute a proposal after the waiting period has passed
     public fun execute_proposal(
         executor: &signer,
         admin_addr: address, 
@@ -84,4 +74,5 @@ module SendMessage::TimeLockGovernance {
         
         abort E_PROPOSAL_NOT_FOUND
     }
+
 }
